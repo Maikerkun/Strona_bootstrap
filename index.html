@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap MD</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  
+  <link href="css/theme.bootstrap.css" rel="stylesheet">
+  <script src="js/jquery.tablesorter.js"></script>
+  <script src="js/jquery.tablesorter.widgets.js"></script>
+  
+  <script type="text/javascript" src="js/validator.js"></script>
+  <script type="text/javascript" src="js/data.json"></script>
+  
+  <script>
+	$(function() {
+		$('#towary').tablesorter({
+		iconSortNone : 'bootstrap-icon-unsorted',
+		iconSortAsc  : 'icon-chevron-up',
+		iconSortDesc : 'icon-chevron-down',
+		widgets : ["columns", "zebra" ],
+		sortList: [[0,0],[4,0]]
+		});
+	});
+
+	</script>
+  
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="index.html">Strona Główna</a>
+	
+		<ul class="nav navbar-nav navbar-inline">
+			<li class="nav-item">
+			  <a class="nav-link" href="http://lcieszynski.zut.edu.pl/fileadmin/DPD/instrukcja_2019.pdf">Instrukcja</a>
+			</li>
+		</ul>
+	
+		<ul class="nav navbar-nav navbar-inline">
+			<div class="pull-right"><button data-toggle="modal" data-target="#koszyk_modal" class="btn btn-primary" onClick="pokaz_koszyk()"><i class="fas fa-shopping-basket"></i> Koszyk</button></div>
+		</ul>
+		
+	</div>
+
+</nav>
+
+
+
+<!--Modal z koszykiem-->
+<div class="modal fade" id="koszyk_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3 class="modal-title" id="title_modal">Koszyk</h3>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+		</div>
+		<div class="modal-body">
+			<table id="koszyk" style="width:100%">
+				<tr>
+					<th>Nazwa</th>
+					<th>Cena brutto</th>
+					<th>Liczba sztuk</th>
+				</tr>
+			</table>
+
+		</div>
+		<div class="modal-footer">
+			<select id="dostawa" class="form-control col-md-6" onchange="obliczenie_sumy()">
+				<option value="poczta">Poczta (4.99 zł)</option>
+				<option value="kurier">Kurier (9.99 zł)</option>
+				<option value="osobisty">Odbiór osobisty (0.00 zł)</option>
+			</select>
+			<div>Do zapłaty: <p id="suma">255555</p></div>
+			<div class="btn-group btn-group-justified" role="group" aria-label="group button">
+				<div class="btn-group" role="group">
+					<button type="button" id="buy" class="btn btn-success" data-dismiss="modal" onClick = "zakup()">Kup</button>
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid" style="margin-top:55px; margin-left:auto; margin-right:auto">
+	<div class="row">
+		<div class="col-md-2">
+			
+		</div>
+		<div class="col-md-8">
+			<!--   FORMULARZ    -->
+			<form class="form-horizontal">
+				<fieldset>
+
+				<!-- NAGŁÓWEK -->
+				<legend>Dodawanie towaru</legend>
+
+				<!-- NAZWA-->
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="name">Nazwa</label>  
+					<div class="col-md-4" id="nazwa">
+						<input id="name" name="name" type="text" class="form-control input-md" onblur="sprawdzTowarName()">
+						<div id="name_blad"></div>
+					
+					</div>
+				</div>
+
+				<!-- KOD TOWARU-->
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="code">Kod towaru</label>  
+					<div class="col-md-4">
+						<input id="code" name="code" type="text" class="form-control input-md" onblur="sprawdzKodTowaru()">
+						<div id="code_blad"></div>
+				  </div>
+				</div>
+
+				<!--NETTO-->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="netto">Cena netto</label>  
+				  <div class="col-md-4">
+					  <input id="netto" name="netto" type="text" class="form-control input-md" onblur="cenaNetto()">
+					  <div id="netto_blad"></div>
+					
+				  </div>
+				</div>
+
+				<!--STAWKA-->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="VAT">Stawka VAT</label>  
+				  <div class="col-md-4">
+					  <input id="VAT" name="VAT" type="text" class="form-control input-md" onblur="stawka_VAT()">
+					  <div id="VAT_blad"></div>
+					
+				  </div>
+				</div>
+
+				<!-- BRUTTO-->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="brutto">Cena brutto</label>  
+				  <div class="col-md-4">
+					  <input id="brutto" name="brutto" type="text" class="form-control input-md" disabled>
+				  </div>
+				</div>
+
+				<!-- KATEGORIE -->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="categories">Kategoria</label>
+				  <div class="col-md-4">
+					<select id="categories" name="categories" class="form-control" onchange="sprawdzKategorie()">
+					  <option value="0"></option>
+					  <option value="Manga">Manga</option>
+					  <option value="Novel">Novel</option>
+					  <option value="Magazyn">Magazyn</option>
+					</select>
+					<div id="cat_blad" class="invalid-feedback">asd</div>
+				  </div>
+				</div>
+
+				<!-- OPCJE TOWARU -->
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="rate">Opcje towaru</label>
+					<div class="col-md-4"> 
+						<form>
+							<input type="checkbox" id="options-1" value="Nowe" onclick="sprawdzOpcje()"> Nowe<br>
+							<input type="checkbox" id="options-2" value="Używane" onclick="sprawdzOpcje()"> Używane<br>
+							<input type="checkbox" id="options-3" value="18+" onclick="sprawdzOpcje()"> 18+<br>
+							<input type="checkbox" id="options-4" value="Seria długa" onclick="sprawdzOpcje()"> Seria długa<br>
+							<input type="checkbox" id="options-5" value="Seria krótka" onclick="sprawdzOpcje()"> Seria krótka<br>
+							<div id="opcje_blad"></div>
+						</form>
+						
+					</div>
+				</div>
+
+
+				<!-- OCENY -->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="rate">Ocena</label>
+				  <div class="col-md-4"> 
+					<label class="radio-inline" for="rate-1">
+					  <input type="radio" name="rate" id="rate-1" value="1" checked="checked">
+					  1  
+					</label> 
+					<label class="radio-inline" for="rate-2">
+					  <input type="radio" name="rate" id="rate-2" value="2">
+					  2  
+					</label> 
+					<label class="radio-inline" for="rate-3">
+					  <input type="radio" name="rate" id="rate-3" value="3">
+					  3
+					</label> 
+					<label class="radio-inline" for="rate-4">
+					  <input type="radio" name="rate" id="rate-4" value="4">
+					  4
+					</label> 
+					<label class="radio-inline" for="rate-5">
+					  <input type="radio" name="rate" id="rate-5" value="5">
+					  5
+					</label>
+				  </div>
+				</div>
+
+				<!-- ZDJĘCIE --> 
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="photo">Dodaj zdjęcie</label>
+				  <div class="col-md-4">
+					<input id="photo" name="photo" class="form-control input-md" type="text" onblur="sprawdzZdjecie()">
+					<div id="photo_blad"></div>
+				  </div>
+				</div>
+
+				<!-- PRZYCISKI -->
+				<div class="form-group">
+				  <label class="col-md-4 control-label" for="add_button"></label>
+				  <div class="col-md-4">
+					<button id="add_button" type="button" class="btn btn-primary" onclick="main_validation()">Dodaj</button>
+					<button id="test_button" type="button" class="btn btn-primary" onclick="load_json()">Wczytaj dane z pliku</button>
+					<div id="button_check"></div>
+				  </div>
+				</div>
+
+				</fieldset>
+			</form>
+			
+			<!-- SORTOWANIE TABELI -->
+			<div class="row">
+				<div class="col-md-2">
+					<select id="sorting" name="sorting" class="form-control" placeholder="Sortowanie" onchange="sortowanie()">
+						<option value="name_A">Nazwa od A</option>
+						<option value="name_Z">Nazwa od Z</option>
+						<option value="price_down">Cena od najniższej</option>
+						<option value="price_up">Cena od najwyższej</option>
+						<option value="rate_down">Ocena od najniższej</option>
+						<option value="rate_up">Ocena od najwyższej</option>
+					</select>
+				</div>
+				<div class="col-md-2">
+					<select id="gallery_display" class="form-control" onchange="gallery()">
+						<option value="list">Lista</option>
+						<option value="grid">Siatka</option>
+					</select>
+				</div>
+			</div>
+			
+			<!-- TABELA -->
+			<div id="gallery_list">
+				<div class="demo" >
+					<label class="col-md-4 control-label" for="towary"><h1>Produkty</h1></label>
+					<table id="towary" class="table table-bordered table-striped">
+						<thead class="thead-light">
+							<tr>
+								<th>Nazwa</th>
+								<th class="sorter-false">Kod towaru</th>
+								<th class="sorter-false">Cena netto</th>
+								<th class="sorter-false">Stawka VAT</th>
+								<th>Cena brutto</th>
+								<th class="sorter-false">Kategoria</th>
+								<th class="sorter-false">Opcje</th>
+								<th>Ocena</th>
+								<th class="sorter-false">Zdjęcie</th>
+								<th class="sorter-false">Funkcje</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+						</tbody>
+					
+					</table>
+					
+				</div>
+			</div>
+			<div id="gallery_grid">
+
+			</div>
+			
+			
+		</div>
+		<!-- PRAWA CZĘŚĆ (WIZYTÓWKA) -->
+		<div class="col-md-2">
+			<div class="card" style="width: 18rem;">
+			  <img class="card-img-top" src="img/Avatar.png" alt="Card image cap">
+			  <div class="card-body">
+				<h5 class="card-title">Wizytówka</h5>
+				<p class="card-text">przykładowy opis</p>
+				<a href="#" class="btn btn-primary">Przycisk</a>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+	<span class="text-muted">Footer</span>
+  </div>
+</footer>
+
+</body>
+</html>
